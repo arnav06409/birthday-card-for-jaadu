@@ -1,0 +1,224 @@
+/* =====================================================================
+   1. COLOURS & FONTS — change these to re-theme the whole card
+   ===================================================================== */
+:root{
+  --ink:#0a0709;        /* near-black background */
+  --wine:#3a0d1a;       /* deep wine */
+  --rose:#e8607a;       /* soft pink-red glow */
+  --crimson:#c81e3f;    /* roses, petals, hearts */
+  --gold:#e9c98a;       /* highlights, date, buttons border */
+  --cream:#f6e9e0;      /* main text */
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;                                  /* emotional text */
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;            /* buttons / UI */
+  --k:1;  /* animation-time multiplier — set automatically from CONFIG.speed in script.js (don't edit) */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--ink);color:var(--cream);font-family:var(--serif);
+  -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+body{background:radial-gradient(ellipse at 50% 30%,#4a1226 0%,#1a0810 55%,#0a0709 100%)}
+
+/* background layers (switched on by JS: body.dark / body.red) */
+#dk,#rd{position:fixed;inset:0;opacity:0;pointer-events:none;transition:opacity calc(2.5s*var(--k)) ease}
+#dk{z-index:0;background:radial-gradient(ellipse at 50% 50%,#150a0e,#000 78%)}
+#dk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(232,96,122,.14),transparent 55%);animation:amb 6s ease-in-out infinite}
+@keyframes amb{50%{opacity:.35}}
+#rd{z-index:1;background:radial-gradient(ellipse at 50% 60%,#4d0716,#14030a 70%)}
+body.dark #dk{opacity:1}
+body.red #rd{opacity:1}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+#flash{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;transform:scale(.1);
+  background:radial-gradient(circle,#fff6dc 0,#ffd9a0 25%,transparent 60%);
+  transition:transform calc(1.6s*var(--k)) ease-in,opacity calc(1.6s*var(--k)) ease}
+#flash.go{opacity:1;transform:scale(4)}
+
+/* =====================================================================
+   2. SCENES (scroll inside themselves on very small screens; never sideways)
+   ===================================================================== */
+.scene{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.15rem;
+  padding:max(56px,env(safe-area-inset-top)) 20px max(24px,env(safe-area-inset-bottom));
+  text-align:center;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;
+  opacity:0;visibility:hidden;filter:blur(12px);transform:scale(1.03);
+  transition:opacity calc(.9s*var(--k)) ease,filter calc(.9s*var(--k)) ease,transform calc(.9s*var(--k)) ease,visibility 0s calc(.9s*var(--k))}
+/* these two empty boxes centre the content, but collapse when content is taller than the screen */
+.scene::before,.scene::after{content:"";flex:1 0 0}
+.scene.on{opacity:1;visibility:visible;filter:none;transform:none;transition-delay:0s}
+.scene::-webkit-scrollbar{display:none}
+.scene{scrollbar-width:none}
+.scene>*{max-width:100%}
+
+/* reveal helper: elements fade/blur/slide in when JS adds .in */
+.rv{opacity:0;transform:translateY(14px);filter:blur(8px);pointer-events:none;
+  transition:opacity calc(1.2s*var(--k)) ease,transform calc(1.2s*var(--k)) ease,filter calc(1.2s*var(--k)) ease}
+.rv.in{opacity:1;transform:none;filter:none;pointer-events:auto}
+.stack{display:grid}
+.stack>*{grid-area:1/1;justify-self:center}
+
+/* =====================================================================
+   3. TYPOGRAPHY
+   ===================================================================== */
+h1{font-weight:500;font-size:clamp(2.5rem,10.5vw,5.4rem);line-height:1.08;letter-spacing:.01em;text-shadow:0 0 40px rgba(232,96,122,.45)}
+h2{font-weight:500;font-size:clamp(1.8rem,7vw,3rem);line-height:1.2;text-wrap:balance}
+.soft,.serif{font-size:clamp(1.2rem,4.8vw,1.65rem);color:var(--gold);line-height:1.5;font-style:italic;text-wrap:balance;transition:opacity calc(.5s*var(--k))}
+.serif{color:var(--cream);font-style:normal}
+.date{font-style:italic;font-size:clamp(1.5rem,6.4vw,2.3rem);letter-spacing:.14em;color:var(--gold);text-shadow:0 0 22px rgba(233,201,138,.7)}
+.date.in{animation:glow 3.6s ease-in-out infinite}
+@keyframes glow{50%{text-shadow:0 0 42px rgba(233,201,138,1),0 0 8px rgba(255,236,190,.6)}}
+.sign{font-size:clamp(1.5rem,6vw,2.2rem);font-style:italic;color:var(--gold)}
+.row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+
+/* =====================================================================
+   4. BUTTONS (glass)
+   ===================================================================== */
+.btn{font-family:var(--sans);font-size:1rem;font-weight:500;letter-spacing:.02em;color:var(--cream);cursor:pointer;
+  padding:14px 30px;border-radius:999px;border:1px solid rgba(233,201,138,.55);max-width:100%;
+  background:rgba(255,255,255,.06);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 8px 30px rgba(0,0,0,.45),0 0 24px rgba(232,96,122,.18);
+  transition:box-shadow .3s,transform .3s,border-color .3s,opacity calc(1.2s*var(--k)),filter calc(1.2s*var(--k))}
+@media (hover:hover){.btn:hover{box-shadow:0 8px 30px rgba(0,0,0,.45),0 0 36px rgba(232,96,122,.55);border-color:var(--gold);transform:translateY(-2px)}}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,#mute:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.btn:disabled{cursor:default}
+.ghost{border-color:rgba(246,233,224,.3)}
+#no{transition:transform .5s cubic-bezier(.3,1.4,.5,1),box-shadow .3s,border-color .3s}
+#begin{position:absolute;left:0;right:0;margin:0 auto;width:fit-content;top:56%}
+#mute{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:9;width:42px;height:42px;border-radius:50%;
+  border:1px solid rgba(233,201,138,.35);background:rgba(255,255,255,.07);color:var(--cream);cursor:pointer;opacity:.75;font-size:1rem;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#mute:hover{opacity:1}
+
+/* =====================================================================
+   5. SCENE 1 — loader
+   ===================================================================== */
+#loader{position:absolute;top:50%;left:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;
+  border:2px solid rgba(233,201,138,.2);border-top-color:var(--gold);box-shadow:0 0 30px rgba(233,201,138,.3);
+  animation:spin 1s linear infinite;transition:opacity .6s}
+#loader.off{opacity:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* =====================================================================
+   6. SCENE 2 — cake (SVG built in script.js)
+   ===================================================================== */
+#cake,#gift{width:min(78vw,330px)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.halo{transition:opacity calc(1s*var(--k))}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flick .35s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.88,1.12) rotate(3deg)}}
+.glow{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.55}}
+.out .flame,.out .glow,.out .halo{opacity:0;animation:none;transition:opacity calc(.8s*var(--k))}
+.smoke{opacity:0;fill:none;stroke:#e4dcdc;stroke-width:2.4;stroke-linecap:round;transform-box:fill-box;transform-origin:50% 100%;filter:blur(1.2px)}
+.out .smoke{animation:smoke 2.6s ease-out forwards}
+@keyframes smoke{0%{opacity:.7;transform:translateY(0) scale(.6)}100%{opacity:0;transform:translateY(-46px) scale(1.7)}}
+.tw{transform-box:fill-box;transform-origin:50% 50%;animation:tw 2.8s ease-in-out infinite}
+@keyframes tw{0%,100%{transform:scale(.2);opacity:.2}50%{transform:scale(1);opacity:1}}
+#slice{opacity:0;transition:opacity .4s}
+.cut #slice{opacity:1}
+#knife{opacity:0}
+.cut #knife{animation:knife calc(1.3s*var(--k)) ease-in forwards}
+@keyframes knife{0%{opacity:1;transform:translateY(-230px)}85%{opacity:1;transform:translateY(96px)}100%{opacity:0;transform:translateY(120px)}}
+#hl,#hr{transform-origin:150px 246px;transition:transform calc(1.2s*var(--k)) ease calc(1.1s*var(--k))}
+.cut #hl{transform:translateX(-17px) rotate(-2.6deg)}
+.cut #hr{transform:translateX(17px) rotate(2.6deg)}
+
+/* =====================================================================
+   7. SCENE 3 — gift
+   ===================================================================== */
+.gbox{animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+#lid{transition:transform calc(1.1s*var(--k)) cubic-bezier(.3,1.3,.5,1),opacity calc(1.2s*var(--k))}
+.open #lid{transform:translate(-20px,-95px) rotate(-22deg);opacity:0}
+.rays,.inl{opacity:0;transition:opacity calc(.8s*var(--k))}
+.open .rays,.open .inl{opacity:1}
+
+/* =====================================================================
+   8. SCENE 4 — letter (typewriter)
+   ===================================================================== */
+#letter{width:min(100%,560px);height:clamp(200px,calc(100vh - 290px),560px);height:clamp(200px,calc(100dvh - 290px),560px);
+  overflow-y:auto;scrollbar-width:none;padding:9vh 4px;font-size:clamp(1.1rem,4.5vw,1.5rem);line-height:1.55;
+  -webkit-mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+#letter::-webkit-scrollbar{display:none}
+.ln{min-height:1.55em;text-wrap:balance;transition:opacity 1.2s}
+.gap{height:.9em}
+#letter.typing .ln.done{opacity:.55}
+.ln.cur::after{content:'';display:inline-block;width:2px;height:1em;margin-left:3px;background:var(--gold);vertical-align:-.12em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* =====================================================================
+   9. SCENE 5 — hearts
+   ===================================================================== */
+.heart{position:fixed;bottom:-30px;z-index:4;color:var(--rose);pointer-events:none;animation:rise 4s ease-in forwards}
+@keyframes rise{to{transform:translateY(-110vh) translateX(var(--dx));opacity:0}}
+
+/* =====================================================================
+   10. SCENE 6 — rose
+   ===================================================================== */
+#rose{width:min(52vw,200px);transition:width calc(1.4s*var(--k)) ease}
+#rose.small{width:min(30vw,112px)}
+#rose .st{stroke-dasharray:240;stroke-dashoffset:240;transition:stroke-dashoffset calc(2.4s*var(--k)) ease}
+#rose.bloom .st{stroke-dashoffset:0}
+#rose .lf{transform-box:fill-box;transform-origin:0 100%;transform:scale(0);transition:transform calc(1.4s*var(--k)) ease calc(1.6s*var(--k))}
+#rose .lf.l2{transform-origin:100% 100%}
+#rose.bloom .lf{transform:scale(1)}
+#rose .p{transform-origin:100px 118px;transform:rotate(var(--r)) scale(0);
+  transition:transform calc(1.6s*var(--k)) cubic-bezier(.2,1.2,.4,1);transition-delay:calc((2.2s + var(--i)*.16s)*var(--k))}
+#rose.bloom .p{transform:rotate(var(--r)) scale(1)}
+#rose .core{opacity:0;transition:opacity calc(1.2s*var(--k)) ease calc(4.6s*var(--k))}
+#rose.bloom .core{opacity:1}
+#rose.bloom{filter:drop-shadow(0 0 26px rgba(230,40,80,.55))}
+.poem{display:flex;flex-direction:column;gap:.2rem;font-size:clamp(1.02rem,4.3vw,1.4rem);line-height:1.55;color:var(--gold);font-style:italic;max-width:520px}
+.poem>div{text-wrap:balance}
+
+/* =====================================================================
+   11. SCENE 7 — final card
+   ===================================================================== */
+.card{width:min(100%,520px);padding:clamp(22px,6vw,44px);border-radius:26px;border:1px solid rgba(233,201,138,.25);
+  background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.02));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 60px rgba(232,96,122,.18);font-size:clamp(1.05rem,4.4vw,1.45rem);line-height:1.55}
+.card p{margin:.2rem 0 .9rem;text-wrap:balance}
+.card .big{font-size:clamp(1.4rem,5.8vw,2rem);color:var(--gold);font-style:italic}
+.pop{display:inline-block;font-size:1.9rem;vertical-align:-.1em;transform:scale(0)}
+.pop.in{animation:pop .8s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes pop{from{transform:scale(0) rotate(-30deg)}to{transform:scale(1)}}
+
+/* =====================================================================
+   13. COUNTDOWN LANDING SCREEN (Scene 0) — shown before the unlock time
+   ===================================================================== */
+body.counting #mute{display:none}                       /* no music controls on the countdown */
+#s0::before,#s0::after{display:none}                    /* signature stays in normal flow, never overlaps */
+.cd-main{margin:auto 0;display:flex;flex-direction:column;align-items:center;gap:1rem;width:100%}
+.cd-title{font-weight:500;font-size:clamp(1.55rem,6.8vw,2.7rem);line-height:1.22;max-width:18ch;text-shadow:0 0 36px rgba(232,96,122,.45)}
+.cd-date{font-style:italic;font-size:clamp(1.3rem,5.6vw,2rem);letter-spacing:.14em;color:var(--gold);text-shadow:0 0 22px rgba(233,201,138,.7);animation:glow 3.6s ease-in-out infinite}
+.cd-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:min(100%,320px);margin:.2rem 0}
+.cd-box{display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:14px 6px 12px;border-radius:20px;min-width:0;
+  border:1px solid rgba(233,201,138,.3);background:linear-gradient(150deg,rgba(255,255,255,.1),rgba(255,255,255,.025));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 14px 40px rgba(0,0,0,.45),0 0 28px rgba(232,96,122,.14)}
+.cd-box b{font-family:'Cormorant Garamond','Times New Roman',Times,serif;font-weight:600;font-size:clamp(2.3rem,11.5vw,3.3rem);line-height:1;
+  font-variant-numeric:lining-nums tabular-nums;color:var(--cream);text-shadow:0 0 24px rgba(232,96,122,.4)}
+.cd-box span{font-family:var(--sans);font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.85;padding-left:.22em}
+.cd-sec b{animation:cdTick 1s ease-in-out infinite}
+@keyframes cdTick{50%{text-shadow:0 0 34px rgba(255,155,176,.9)}}
+.cd-note{font-size:clamp(1.05rem,4.2vw,1.35rem)}
+.cd-sign{font-style:italic;font-size:.95rem;letter-spacing:.04em;color:var(--cream);opacity:0;padding-top:.5rem;animation:cdFade 2.4s ease 1.2s forwards}
+@keyframes cdFade{to{opacity:.5}}
+@media (min-width:600px){.cd-grid{grid-template-columns:repeat(4,minmax(0,1fr));width:min(100%,560px)}}
+@media (max-height:640px) and (max-width:599px){.cd-main{gap:.7rem}.cd-title{font-size:clamp(1.4rem,6.2vw,1.9rem)}.cd-box{padding:10px 6px 9px}.cd-box b{font-size:clamp(2rem,10vw,2.7rem)}}
+
+/* floating hearts, balloons & stars (created in script.js) — transform/opacity only = smooth on phones */
+#cdfx{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:opacity calc(1.2s*var(--k))}
+#cdfx.off{opacity:0}
+.fl{position:absolute;bottom:-100px;left:var(--x);width:var(--s);aspect-ratio:var(--ar,1);background:var(--img) center/contain no-repeat;
+  opacity:0;will-change:transform,opacity;animation:flUp var(--t) linear var(--d) infinite}
+@keyframes flUp{0%{transform:translate3d(0,0,0);opacity:0}10%{opacity:var(--o)}33%{transform:translate3d(var(--dx),-40vh,0)}
+  66%{transform:translate3d(calc(var(--dx)*-1),-80vh,0)}88%{opacity:var(--o)}100%{transform:translate3d(0,-125vh,0);opacity:0}}
+.fs{position:absolute;left:var(--x);top:var(--y);width:var(--s);aspect-ratio:1;background:var(--img) center/contain no-repeat;opacity:0;animation:fsTw var(--t) ease-in-out var(--d) infinite}
+@keyframes fsTw{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:.85;transform:scale(1)}}
+
+/* =====================================================================
+   12. SMALL SCREENS & REDUCED MOTION
+   ===================================================================== */
+@media (max-height:600px){.scene{gap:.8rem}#cake,#gift{width:min(60vw,250px)}}
+@media (max-width:380px){.btn{padding:13px 24px}}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.25s!important;transition-delay:0s!important}
+  .flame,.glow,.tw,.gbox,.date.in{animation:none!important}
+}
